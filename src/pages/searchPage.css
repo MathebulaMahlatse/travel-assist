@@ -1,0 +1,5 @@
+.search-page {
+  margin-top: 3em; }
+  .search-page .header {
+    display: flex;
+    justify-content: center; }
