@@ -1,0 +1,12 @@
+.deal-section {
+  .deals-total{
+    display: flex;
+    flex-direction: row;
+    margin: 1em;
+    padding: 1em;
+    background-color: #CACFD2;
+    span:nth-child(3) {
+      margin-left: auto;
+    }
+  }
+}
