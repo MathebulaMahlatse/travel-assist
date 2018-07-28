@@ -1744,20 +1744,30 @@ describe('travelUtils', () => {
 
     describe('shortest path', () => {
         it('should get connected as a graph', () => {
-            expect(travelUtil.getConnectedRoutesAsGraph(deals, 'London', 'Amsterdam'))
+            expect(travelUtil.getConnectedRoutesAsGraph(deals, 'London', 'Amsterdam', 'CHEAPEST'))
                 .toEqual({finish: {}, start: {Paris: 40, finish: 40}})
+        });
+
+        it('should get connected as a graph', () => {
+            expect(travelUtil.getConnectedRoutesAsGraph(deals, 'London', 'Amsterdam', 'FASTEST'))
+                .toEqual({"finish": {}, "start": {"Paris": 415, "finish": 445}})
         });
     });
 
     describe('getShortestRoute', () => {
         it('should get the shortest path from London to Amsterdam', () => {
-            expect(travelUtil.getShortestRoute(deals, 'London', 'Amsterdam' ))
+            expect(travelUtil.getShortestRoute(deals, 'London', 'Amsterdam', 'CHEAPEST'))
                 .toEqual({distance: 40, path: ['start', 'finish']})
         });
 
         it('should get the shortest path from London to Amsterdam', () => {
-            expect(travelUtil.getShortestRoute(deals, 'London', 'Stockholm' ))
+            expect(travelUtil.getShortestRoute(deals, 'London', 'Stockholm', 'CHEAPEST'))
                 .toEqual({distance: 120, path: ['start', 'Amsterdam', 'Warsaw', 'finish']})
+        });
+
+        it('should get the faster route', () => {
+            expect(travelUtil.getShortestRoute(deals, 'London', 'Amsterdam', 'FASTEST'))
+                .toEqual({distance: 445, path: ['start', 'finish']})
         });
     });
 
@@ -1765,30 +1775,34 @@ describe('travelUtils', () => {
         [
             {
                 departure: 'London',
-                arrival: 'Amsterdam'
+                arrival: 'Amsterdam',
+                tripType: 'Cheapest'
             },
             {
                 departure: 'London',
-                arrival: 'Warsaw'
+                arrival: 'Warsaw',
+                tripType: 'Cheapest'
             },
             {
                 departure: 'Warsaw',
-                arrival: 'Rome'
+                arrival: 'Rome',
+                tripType: 'Cheapest'
             },
             {
                 departure: 'London',
-                arrival: 'Rome'
+                arrival: 'Rome',
+                tripType: 'Cheapest'
             },
             {
                 departure: 'Amsterdam',
-                arrival: 'London'
+                arrival: 'London',
+                tripType: 'Cheapest'
             }
         ].forEach(trip => {
             it(`should return connected routes for departure: ${trip.departure} and arrival: ${trip.arrival}`, () => {
-                const shortestRoute = travelUtil.getShortestRoute(deals, trip.departure, trip.arrival );
+                const shortestRoute = travelUtil.getShortestRoute(deals, trip.departure, trip.arrival, trip.tripType);
 
-                const travelType = 'CHEAPEST';
-                const connectedCities = travelUtil.getConnectedRoutes(deals, shortestRoute, trip.departure, trip.arrival, travelType);
+                const connectedCities = travelUtil.getConnectedRoutes(deals, shortestRoute, trip.departure, trip.arrival, trip.tripType);
 
                 let totalCost = 0;
                 connectedCities.forEach(city => {
@@ -1802,18 +1816,58 @@ describe('travelUtils', () => {
 
             });
         });
+
+        [
+            {
+                departure: 'London',
+                arrival: 'Amsterdam',
+                tripType: 'Fastest'
+            },
+            {
+                departure: 'London',
+                arrival: 'Rome',
+                tripType: 'Fastest'
+            },
+            {
+                departure: 'Warsaw',
+                arrival: 'Stockholm',
+                tripType: 'Fastest'
+            }
+        ].forEach(trip => {
+            it(`should return connected routes for departure: ${trip.departure} and arrival: ${trip.arrival}`, () => {
+                const shortestRoute = travelUtil.getShortestRoute(deals, trip.departure, trip.arrival, trip.tripType);
+
+                const connectedCities = travelUtil.getConnectedRoutes(deals, shortestRoute, trip.departure, trip.arrival, trip.tripType);
+
+                let totalCost = 0;
+                connectedCities.forEach(city => {
+                    totalCost += city.cost;
+                });
+            });
+        });
     });
 
     describe('getPath', function () {
-        it('should get path', () => {
+        it('should get cheapest path', () => {
             let graph = {
                 start: {
                     Amsterdam: 160
                 }
             };
 
-            travelUtil.getPath(deals, ['Amsterdam'], graph, 'London', 'Brussels');
+            travelUtil.getPath(deals, ['Amsterdam'], graph, 'London', 'Brussels', 'CHEAPEST');
             expect(graph).toEqual({Amsterdam: {Warsaw: 40, finish: 40}, start: {Amsterdam: 160}})
         });
+
+        it('should get fastest path', () => {
+            let graph = {
+                start: {
+                    Amsterdam: 160
+                }
+            };
+
+            travelUtil.getPath(deals, ['Amsterdam'], graph, 'London', 'Brussels', 'FASTEST');
+            expect(graph).toEqual({"Amsterdam": {"Warsaw": 445, "finish": 430}, "start": {"Amsterdam": 160}});
+        })
     });
 });

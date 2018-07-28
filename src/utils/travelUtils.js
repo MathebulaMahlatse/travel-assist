@@ -22,7 +22,7 @@ export const getShortestRoute = (deals, departure, arrival, tripType) => {
     return dijkstra(cheapestGraph);
 };
 
-export const getConnectedRoutesAsGraph = (deals, departure, arrival) => {
+export const getConnectedRoutesAsGraph = (deals, departure, arrival, tripType) => {
     let graph = {
         start: {},
         finish: {}
@@ -30,25 +30,19 @@ export const getConnectedRoutesAsGraph = (deals, departure, arrival) => {
 
     deals.forEach(deal => {
         if(arrival === deal.arrival && deal.departure === departure) {
-            if(graph.start['finish']) {
-                const cost = graph.start['finish'];
 
-                if(cost > (deal.cost)) {
-                    graph.start['finish'] = (deal.cost);
-                }
+            if(tripType.toUpperCase() === 'CHEAPEST') {
+                updateCostOfTrip(graph, 'start', 'finish', deal);
             } else {
-                graph.start['finish'] = deal.cost;
+                updateTravelTimeOfTrip(graph, 'start', 'finish', deal);
             }
+
         }
         else if(deal.departure === departure ) {
-            if(graph.start[deal.arrival]) {
-                const cost = graph.start[deal.arrival];
-
-                if(cost > (deal.cost)) {
-                    graph.start[deal.arrival] = deal.cost;
-                }
+            if(tripType.toUpperCase() === 'CHEAPEST') {
+                updateCostOfTrip(graph, 'start', deal.arrival, deal);
             } else {
-                graph.start[deal.arrival] = deal.cost;
+                updateTravelTimeOfTrip(graph, 'start', deal.arrival, deal);
             }
         }
     });
@@ -61,7 +55,7 @@ export const getConnectedRoutesAsGraph = (deals, departure, arrival) => {
     }
 
     while(thereIsMoreKeys) {
-        getPath(deals, keys, graph, departure, arrival);
+        getPath(deals, keys, graph, departure, arrival, tripType);
 
         keys = [];
 
@@ -90,7 +84,7 @@ export const getConnectedRoutesAsGraph = (deals, departure, arrival) => {
     return graph;
 };
 
-export const getPath = (deals, keys, graph, originalDeparture, originalDestination) => {
+export const getPath = (deals, keys, graph, originalDeparture, originalDestination, tripType) => {
     keys.forEach(key => {
         if(!graph[key] && originalDestination !== key) {
             graph[key] = {};
@@ -98,29 +92,45 @@ export const getPath = (deals, keys, graph, originalDeparture, originalDestinati
 
         deals.forEach(deal => {
             if(deal.departure === key && originalDeparture !== deal.arrival && originalDestination !== deal.arrival) {
-                if(graph[key][deal.arrival]) {
-                    const cost = graph[key][deal.arrival];
-                    if(cost > (deal.cost)) {
-                        graph[key][deal.arrival] = deal.cost;
-                    }
-                }
-                else {
-                    graph[key][deal.arrival] = deal.cost;
+                if(tripType.toUpperCase() === 'CHEAPEST') {
+                    updateCostOfTrip(graph, key, deal.arrival, deal);
+                } else {
+                    updateTravelTimeOfTrip(graph, key, deal.arrival, deal);
                 }
             } else if (deal.departure === key && originalDeparture !== deal.arrival && originalDestination === deal.arrival) {
-
-                if(graph[key]['finish']) {
-                    const cost = graph[key]['finish'];
-
-                    if(cost > (deal.cost)) {
-                        graph[key]['finish'] = deal.cost;
-                    }
+                if(tripType.toUpperCase() === 'CHEAPEST') {
+                    updateCostOfTrip(graph, key, 'finish', deal);
                 } else {
-                    graph[key]['finish'] = deal.cost;
+                    updateTravelTimeOfTrip(graph, key, 'finish', deal);
                 }
             }
         });
     });
+};
+
+const updateCostOfTrip = (graph, key, arrival, deal) => {
+    if(graph[key][arrival]) {
+        const cost = graph[key][arrival];
+
+        if(cost > (deal.cost)) {
+            graph[key][arrival] = deal.cost;
+        }
+    } else {
+        graph[key][arrival] = deal.cost;
+    }
+};
+
+const updateTravelTimeOfTrip = (graph, key, arrival, deal) => {
+    if(graph[key][arrival]) {
+        const time = graph[key][arrival];
+
+        const dealTime = Number(deal.duration.h + deal.duration.m);
+        if(time > dealTime) {
+            graph[key][arrival] = dealTime;
+        }
+    } else {
+        graph[key][arrival] =  Number(deal.duration.h + deal.duration.m);
+    }
 };
 
 export const getConnectedRoutes = (deals, shortestRoute, departure, arrival, travelType) => {
@@ -133,8 +143,10 @@ export const getConnectedRoutes = (deals, shortestRoute, departure, arrival, tra
                 return deal.departure === departure && deal.arrival === relevantArrival;
             });
 
-            if(travelType === 'CHEAPEST') {
-                relevantDeals.sort(compare)
+            if(travelType.toUpperCase() === 'CHEAPEST') {
+                relevantDeals.sort(compareCosts)
+            } else {
+                relevantDeals.sort(compareTime);
             }
 
             routes.push(relevantDeals[0])
@@ -146,8 +158,11 @@ export const getConnectedRoutes = (deals, shortestRoute, departure, arrival, tra
                     return deal.departure === city && deal.arrival === relevantArrival;
                 });
 
-                if(travelType === 'CHEAPEST') {
-                    relevantDeals.sort(compare)
+                if(travelType.toUpperCase() === 'CHEAPEST') {
+                    relevantDeals.sort(compareCosts)
+                }
+                else {
+                    relevantDeals.sort(compareTime);
                 }
 
                 routes.push(relevantDeals[0])
@@ -163,10 +178,31 @@ export const findRoutesToArrival = (deals, departure, arrival, tripType) => {
     return getConnectedRoutes(deals, shortestRoutes, departure, arrival, tripType)
 };
 
-function compare(a,b) {
+function compareCosts(a,b) {
     if (a.cost < b.cost)
         return -1;
     if (a.cost > b.cost)
         return 1;
     return 0;
 }
+
+const compareTime = (a, b) => {
+    const timeA = Number(a.duration.h + a.duration.m);
+    const timeB = Number(b.duration.h + b.duration.m);
+
+    if(timeA < timeB)
+        return -1;
+    if(timeA > timeB)
+        return 1;
+
+    // Give preference to that one that costs less
+    if(timeA === timeB) {
+        if (a.cost < b.cost)
+            return -1;
+        if (a.cost > b.cost)
+            return 1;
+    }
+
+    return 0;
+
+};
