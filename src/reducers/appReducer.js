@@ -2,7 +2,8 @@ import * as searchActionTypes from '../features/searchDeal/searchActionTypes';
 import * as dealActionTypes from '../features/viewDeal/dealActionTypes';
 
 const initialState = {
-    searchSuccess: null
+    searchSuccess: null,
+    searchParams: null
 };
 
 const app = (state = initialState, action = null) => {
@@ -18,6 +19,13 @@ const app = (state = initialState, action = null) => {
             return {
                 ...state,
                 searchSuccess: false
+            }
+        }
+
+        case searchActionTypes.SEARCH_OPTIONS: {
+            return {
+                ...state,
+                searchParams: action.payload
             }
         }
 

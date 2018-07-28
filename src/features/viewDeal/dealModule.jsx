@@ -6,8 +6,11 @@ import * as dealActions from './dealActions';
 
 
 export function mapStateToProps(state) {
+    const {data, app} = state;
     return {
-      route: state.data.route
+        route: data.route,
+        currency: data.deals.currency,
+        searchParams: app.searchParams
     };
   }
 

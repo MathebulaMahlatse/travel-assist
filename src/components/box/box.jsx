@@ -21,7 +21,7 @@ class Box extends React.Component {
     render() {
         const {props} = this;
         return (
-            <div className='box'>
+            <div className={`box ${props.className}`}>
                 <div className='row'>
                     {this.props.children}
                 </div>
