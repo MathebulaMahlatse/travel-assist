@@ -5,6 +5,7 @@ import {DropDown} from '../../components/controls/selectControl';
 import './searchForm.css';
 import Button from '@material-ui/core/Button';
 import Search from '@material-ui/icons/Search';
+import {connect} from "react-redux";
 
 const tripType = [
     'Cheapest',
@@ -21,15 +22,19 @@ class SearchFormSection extends React.Component {
         }
     }
 
+    submit(values) {
+        this.props.actions.findRoutesToArrival(values['departure'], values['arrival'], 'Cheapest')
+    }
+
     render() {
-        const { handleSubmit } = this.props;
+        const { handleSubmit, dispatch, blur, errors } = this.props;
         const {selectedFrom, selectedTo, selectedTripType} = this.state;
         const cities = this.props.cities ? this.props.cities.departure : [];
         const arrival = this.props.cities ? this.props.cities.arrival : [];
-    
+
         return (
             <Box>
-                <form onSubmit={handleSubmit} className='search-form'>
+                <form onSubmit={handleSubmit((values) => {this.submit(values)})} className='search-form'>
                     <div className='margin-bottom'>
                         <Field 
                             name="departure"
@@ -37,25 +42,31 @@ class SearchFormSection extends React.Component {
                             component={DropDown} 
                             valuesList={cities} 
                             hintLabel='Departure'
+                            error={errors && errors['departure']}
                             menuItemChanged={value => {
                                 this.setState({
                                     selectedFrom: value
                                 });
+
+                                dispatch(blur('departure', value));
                             }}
                             selectedValue={selectedFrom}/>
                     </div>
 
                     <div className='margin-bottom'>
                         <Field 
-                            name="destination"
+                            name="arrival"
                             fullWidth={true} 
                             component={DropDown} 
                             valuesList={arrival} 
-                            hintLabel='Destination'
+                            hintLabel='Arrival'
+                            error={errors && errors['arrival']}
                             menuItemChanged={value => {
                                 this.setState({
                                     selectedTo: value
                                 });
+
+                                dispatch(blur('arrival', value));
                             }}
                             selectedValue={selectedTo}/>
                     </div>
@@ -71,11 +82,13 @@ class SearchFormSection extends React.Component {
                                 this.setState({
                                     selectedTripType: value
                                 });
+
+                                dispatch(blur('tripType', value));
                             }}
                             selectedValue={selectedTripType}/>
                     </div>
 
-                    <Button variant="extendedFab" color="primary">
+                    <Button variant="extendedFab" color="primary" type='submit'>
                             <Search/>
                         Search
                     </Button>
@@ -85,8 +98,30 @@ class SearchFormSection extends React.Component {
     }
 }
 
-SearchFormSection = reduxForm({
-    form: 'search'
-  })(SearchFormSection);
+const mapStateToProps = (state) => {
+    const errors = state && state.form && state.form['search'] && state.form['search'].syncErrors;
+    return {
+        initialValues: {
+            tripType: 'Cheapest'
+        },
+        errors
+    }
+};
 
-export default SearchFormSection;
+const validate = (values) => {
+    const errors = {};
+    const requiredValues = ['departure', 'arrival'];
+
+    requiredValues.forEach(key => {
+        if(!values[key] || values[key].length === 0) {
+            errors[key] = 'This field is required';
+        }
+    });
+
+    return errors;
+};
+
+export default connect(mapStateToProps) (reduxForm({
+    form: 'search',
+    validate
+})(SearchFormSection));

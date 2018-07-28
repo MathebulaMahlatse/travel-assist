@@ -2,18 +2,18 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import dealOverviewSection from './dealOverviewSection';
-import * as searchActions from '../searchDeal/searchActions';
+import * as dealActions from './dealActions';
 
 
 export function mapStateToProps(state) {
     return {
-      cities: state.data.cities
+      route: state.data.route
     };
   }
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        actions: bindActionCreators(searchActions, dispatch)
+        actions: bindActionCreators(dealActions, dispatch)
     };
 };
 

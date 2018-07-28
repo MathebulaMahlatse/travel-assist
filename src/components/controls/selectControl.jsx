@@ -4,6 +4,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import _ from 'lodash';
 import InputLabel from '@material-ui/core/InputLabel';
 import Input from '@material-ui/core/Input';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 const ITEM_HEIGHT = 48;
 const ITEM_PADDING_TOP = 8;
@@ -16,7 +17,7 @@ const MenuProps = {
   },
 };
 
-export const DropDown = ({ hintLabel, styles, menuItemChanged, defaultItemText, defaultItemValue, id, selectedValue, valuesList, label }) => (
+export const DropDown = ({ error, hintLabel, styles, menuItemChanged, defaultItemText, defaultItemValue, id, selectedValue, valuesList, label }) => (
     <div> 
         <InputLabel htmlFor="select">{hintLabel}</InputLabel>
         <Select 
@@ -38,6 +39,7 @@ export const DropDown = ({ hintLabel, styles, menuItemChanged, defaultItemText, 
                     >{item}</MenuItem>);
             })}
         </Select>
+        {error ? <FormHelperText error={true}>{error}</FormHelperText> : null    }
     </div>
    
 );

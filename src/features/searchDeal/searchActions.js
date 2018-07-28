@@ -20,11 +20,16 @@ export const travelDeals = () => {
 
 export const findRoutesToArrival = (departure, arrival, tripType) => {
     return (dispatch, state) => {
-        const routes = travelUtils.findRoutesToArrival(state.data.deals, departure, arrival, tripType);
+        const routes = travelUtils.findRoutesToArrival(state().data.deals.deals, departure, arrival, tripType.toUpperCase());
 
         dispatch({
             type: searchActionsTypes.SEARCH_STORE_ROUTE,
             payload: routes
+        });
+
+        dispatch({
+            type: searchActionsTypes.SEARCH_SUCCESS,
+            payload: true
         })
     };
 };

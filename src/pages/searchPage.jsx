@@ -1,5 +1,6 @@
 import React from 'react';
 import SearchModule from '../features/searchDeal/searchModule';
+import DealModule from '../features/viewDeal/dealModule';
 import * as searchActions from '../features/searchDeal/searchActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -10,12 +11,13 @@ class SearchPage extends React.Component {
         this.props.actions.travelDeals();
     }
     render() {
+        const {searchSuccess} = this.props;
         return (
             <div className='search-page'>
                 <div className='header'>
                     Travel Assist
                 </div>
-                <SearchModule/>
+                {searchSuccess ? <DealModule/> : <SearchModule/> }
             </div>
         )
     }
@@ -23,7 +25,7 @@ class SearchPage extends React.Component {
 
 export function mapStateToProps(state) {
     return {
-      ...state
+        searchSuccess: state.app.searchSuccess
     };
   }
 

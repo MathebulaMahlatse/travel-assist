@@ -4,23 +4,20 @@ import DealItem from './dealItem';
 import Button from '@material-ui/core/Button';
 import Refresh from '@material-ui/icons/Refresh';
 
-const deal = {
-    departure: 'London',
-    destination: 'Paris',
-    amount: '10$',
-    transportType: 'train',
-    reference: 'AB123',
-    time: '02h15'
-}
 class DealOverviewSection extends React.Component {
     render() {
+        const dealsHTML = this.props.route.map((cityProp, index) => {
+            return (
+                <DealItem {...cityProp} key={index}/>
+            )
+        });
         return (
             <Box>
-                <DealItem {...deal}/>
-                <DealItem {...deal}/>
-                <DealItem {...deal}/>
+                {dealsHTML.length > 0 ? dealsHTML : <div>There are no routes</div>}
 
-                <Button variant="extendedFab" color="primary">
+                <Button variant="extendedFab" color="primary" onClick={() => {
+                    this.props.actions.resetDeal();
+                }}>
                             <Refresh/>
                         Reset
                     </Button>
