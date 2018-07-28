@@ -23,7 +23,7 @@ class SearchFormSection extends React.Component {
     }
 
     submit(values) {
-        this.props.actions.findRoutesToArrival(values['departure'], values['arrival'], 'Cheapest')
+        this.props.actions.findRoutesToArrival(values['departure'], values['arrival'], values['tripType'])
     }
 
     render() {

@@ -23,6 +23,14 @@ export const findRoutesToArrival = (departure, arrival, tripType) => {
         const routes = travelUtils.findRoutesToArrival(state().data.deals.deals, departure, arrival, tripType.toUpperCase());
 
         dispatch({
+            type: searchActionsTypes.SEARCH_OPTIONS,
+            payload: {
+                departure,
+                arrival
+            }
+        });
+
+        dispatch({
             type: searchActionsTypes.SEARCH_STORE_ROUTE,
             payload: routes
         });
