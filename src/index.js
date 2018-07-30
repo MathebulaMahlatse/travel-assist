@@ -6,7 +6,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 import { Provider } from 'react-redux';
 import { applyMiddleware, compose, createStore } from 'redux';
 import reducers from './store/createStore';
-import SearchPage from './pages/searchPage';
+import HomePage from './pages/homePage';
 import thunk from 'redux-thunk';
 
 const theme = createMuiTheme({
@@ -22,7 +22,7 @@ class App extends React.Component {
         return (
             <Provider store={store}>
                 <MuiThemeProvider theme={theme}>
-                    <SearchPage/>
+                    <HomePage/>
                 </MuiThemeProvider>
             </Provider>
         
