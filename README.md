@@ -1,6 +1,9 @@
 # Travel assist
 
-#### Search for best deals
+#### Search for best travel deals
+
+#### Demo
+Live demo [http://travel-assist.africandeveloper.co.za/](http://travel-assist.africandeveloper.co.za/)
 
 ##### Language, Frameworks and Build Tools
 * [Create React App](https://github.com/facebook/create-react-app)
