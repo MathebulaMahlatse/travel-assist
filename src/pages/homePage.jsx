@@ -4,9 +4,9 @@ import DealModule from '../features/viewDeal/dealModule';
 import * as searchActions from '../features/searchDeal/searchActions';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import './searchPage.css';
+import './homePage.css';
 
-class SearchPage extends React.Component {
+class HomePage extends React.Component {
     componentWillMount() {
         this.props.actions.travelDeals();
     }
@@ -38,4 +38,4 @@ const mapDispatchToProps = (dispatch) => {
 export default connect(
     mapStateToProps,
     mapDispatchToProps
-  )(SearchPage);
+  )(HomePage);
