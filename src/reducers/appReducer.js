@@ -6,7 +6,7 @@ const initialState = {
     searchParams: null
 };
 
-const app = (state = initialState, action = null) => {
+const app = (state = initialState, action = {type: null}) => {
     switch(action.type) {
         case searchActionTypes.SEARCH_SUCCESS: {
             return {
