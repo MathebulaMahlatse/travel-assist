@@ -6,7 +6,7 @@ const initialState = {
     route: null
 };
 
-const app = (state = initialState, action = null) => {
+const app = (state = initialState, action = {type: null}) => {
     switch(action.type) {
         case searchActionTypes.SEARCH_STORE_DEALS: {
             return {
