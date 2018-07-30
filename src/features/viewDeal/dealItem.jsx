@@ -69,9 +69,7 @@ const DealItem = props => {
 
             <div className={`${props.classes.flexRow} ${props.classes.textPadding}`}>
                 {getTransportIcon(props.transport, props.classes.svg)}
-                <div>{props.reference}</div>
-                <div>for</div>
-                <div>{props.duration.h}h{props.duration.m}</div>
+                <div id='ref'>{props.reference} for {props.duration.h}h{props.duration.m}</div>
             </div>
         </Paper>
     );
