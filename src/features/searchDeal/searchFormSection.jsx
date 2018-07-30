@@ -118,6 +118,10 @@ const validate = (values) => {
         }
     });
 
+    if(values['departure'] && values['arrival'] && values['departure'] === values['arrival']) {
+        errors['arrival'] = 'Departure cannot be the same as arrival'
+    }
+
     return errors;
 };
 

@@ -39,7 +39,7 @@ class DealOverviewSection extends React.Component {
                         <span>{currencyFormat.format(total.cost, {code: currency})}</span>
                     </Paper>
 
-                    <Button variant="extendedFab" color="primary" onClick={() => {
+                    <Button variant="extendedFab" color="primary" className='button-reset' onClick={() => {
                         actions.resetDeal();
                     }}>
                         <Refresh/>
